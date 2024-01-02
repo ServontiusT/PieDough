@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PieDough:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PieDough_jar</output-path>
+    <root id="archive" name="PieDough.jar">
+      <element id="module-output" name="PieDough" />
+    </root>
+  </artifact>
+</component>
