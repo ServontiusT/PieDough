@@ -1,5 +1,8 @@
+import java.sql.Array;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Scanner;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -20,34 +23,29 @@ public class Main {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
-    public static void ingredientCalculator(Scanner scanner, DecimalFormat df, int recipeType) {
-        String flourOneType = null, flourTwoType = null, flourThreeType = null;
-        double baseProtein, targetProtein, vwgProtein;
 
+    public static void ingredientCalculator(Scanner scanner, DecimalFormat df, int recipeType) {
+        String flourOneType, flourTwoType = null, flourThreeType = null;
+        double flourOnePercent, flourTwoPercent = 0, flourThreePercent = 0;
+        double baseProtein, targetProtein, vwgProtein;
+        ArrayList<String> flourTypes = new ArrayList<>();
+        ArrayList<String> flourPct = new ArrayList<>();
+
+        String[] tempArray = new String[2];
+
+        String userInput;
         int flourCount;
 
         String useVWG;
+        double vwgWeight = 0;
 
-        double flourOnePercent = 0;
-        double flourTwoPercent = 0;
-        double flourThreePercent = 0;
         double waterPercent = 65.0;
         double saltPercent = 2.0;
         double yeastPercent = 0.35;
         double oilPercent = 2.0;
         double sugarPercent = 1.0;
 
-        double flourOneWeight = 0;
-        double flourTwoWeight = 0.0;
-        double flourThreeWeight = 0.0;
-        double waterWeight = 0.0;
-        double saltWeight = 0.0;
-        double yeastWeight = 0.0;
-        double oilWeight = 0.0;
-        double sugarWeight = 0.0;
-        double vwgWeight = 0.0;
-
-        if (recipeType == 2){
+        if(recipeType == 2) {
             System.out.print("Enter custom Percentage of Water: ");
             waterPercent = Double.parseDouble(scanner.nextLine());
             System.out.print("Enter custom Percentage of Salt: ");
@@ -77,47 +75,54 @@ public class Main {
             }
         }
 
-        if (flourCount == 3) {
-            System.out.println("Flour Type 1 and Percent: ");
-            flourOneType = scanner.nextLine();
-            flourOnePercent = Double.parseDouble(scanner.nextLine());
+        for(int count = 0; count < flourCount; count++) {
+            System.out.print("Flour " + (count + 1) + " type and Percent (Separate by Space): ");
+            userInput = scanner.nextLine();
 
-            System.out.println("Flour Type 2 and Percent: ");
-            flourTwoType = scanner.nextLine();
-            flourTwoPercent = Double.parseDouble(scanner.nextLine());
+            tempArray = userInput.split(" ");
 
-            System.out.println("Flour Type 3 and Percent: ");
-            flourThreeType = scanner.nextLine();
-            flourThreePercent = Double.parseDouble(scanner.nextLine());
-        } else if (flourCount == 2) {
-            System.out.println("Flour Type 1 and Percent: ");
-            flourOneType = scanner.nextLine();
-            flourOnePercent = Double.parseDouble(scanner.nextLine());
-
-            System.out.print("Flour Type 2 and Percent: ");
-            flourTwoType = scanner.nextLine();
-            flourTwoPercent = Double.parseDouble(scanner.nextLine());
-        } else {
-            System.out.print("Flour Type and Percent: ");
-            flourOneType = scanner.nextLine();
-            flourOnePercent = Double.parseDouble(scanner.nextLine());
+            flourTypes.add(tempArray[0]);
+            flourPct.add(tempArray[1]);
         }
 
+        if (flourCount == 3) {
+            flourOneType = flourTypes.get(0);
+            flourTwoType = flourTypes.get(1);
+            flourThreeType = flourTypes.get(2);
+            flourOnePercent = Double.parseDouble(flourPct.get(0));
+            flourTwoPercent = Double.parseDouble(flourPct.get(1));
+            flourThreePercent = Double.parseDouble(flourPct.get(2));
+        } else if (flourCount == 2) {
+            flourOneType = flourTypes.get(0);
+            flourTwoType = flourTypes.get(1);
+            flourOnePercent = Double.parseDouble(flourPct.get(0));
+            flourTwoPercent = Double.parseDouble(flourPct.get(1));
+        } else {
+            flourOneType = flourTypes.get(0);
+            flourOnePercent = Double.parseDouble(flourPct.get(0));
+        }
+
+        PizzaDough customDough = new PizzaDough(
+                flourOnePercent, flourTwoPercent, flourThreePercent, waterPercent, saltPercent, yeastPercent, oilPercent, sugarPercent
+        );
+
+        ArrayList<Double> ingredientWeights = customDough.calculateIngredientWeight(numOfDoughBalls, doughBallWeight);
+        /*
         double ingredientPercentTotal = 100 + waterPercent + yeastPercent + saltPercent + oilPercent + sugarPercent;
         double expectedTotal = numOfDoughBalls * doughBallWeight;
-        double multiplier = expectedTotal / ingredientPercentTotal;
+        double multiplier = expectedTotal / ingredientPercentTotal;*/
 
-        flourOneWeight = flourOnePercent * multiplier;
-        flourTwoWeight = flourTwoPercent * multiplier;
-        flourThreeWeight = flourThreePercent * multiplier;
-        waterWeight = waterPercent * multiplier;
-        saltWeight = saltPercent * multiplier;
-        yeastWeight = yeastPercent * multiplier;
-        oilWeight = oilPercent * multiplier;
-        sugarWeight = sugarPercent * multiplier;
+        double flourOneWeight = ingredientWeights.get(0);
+        double flourTwoWeight = ingredientWeights.get(1);
+        double flourThreeWeight = ingredientWeights.get(2);
+        double waterWeight = ingredientWeights.get(3);
+        double saltWeight = ingredientWeights.get(4);
+        double yeastWeight = ingredientWeights.get(5);
+        double oilWeight = ingredientWeights.get(6);
+        double sugarWeight = ingredientWeights.get(7);
 
         System.out.print("Would you like to use Vital Wheat Gluten (Y/N)?: ");
-        useVWG = (scanner.nextLine());
+        useVWG = scanner.nextLine();
 
         //Calculates Vital Wheat Gluten and subtracts from Chosen Flour
         if (useVWG.equals("Y") || useVWG.equals("y")) {
@@ -185,6 +190,6 @@ public class Main {
             System.out.println("Sugar: " + df.format(sugarWeight) + "g");
         }
         System.out.println(" ");
-        System.out.println("Expected Dough Weight: " + expectedTotal);
+        System.out.println("Expected Dough Weight: " + numOfDoughBalls * doughBallWeight);
     }
 }
