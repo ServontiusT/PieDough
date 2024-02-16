@@ -1,4 +1,4 @@
-import java.sql.Array;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -31,7 +31,7 @@ public class Main {
         ArrayList<String> flourTypes = new ArrayList<>();
         ArrayList<String> flourPct = new ArrayList<>();
 
-        String[] tempArray = new String[2];
+        String[] tempArray;// = new String[2];
 
         String userInput;
         int flourCount;
@@ -107,10 +107,6 @@ public class Main {
         );
 
         ArrayList<Double> ingredientWeights = customDough.calculateIngredientWeight(numOfDoughBalls, doughBallWeight);
-        /*
-        double ingredientPercentTotal = 100 + waterPercent + yeastPercent + saltPercent + oilPercent + sugarPercent;
-        double expectedTotal = numOfDoughBalls * doughBallWeight;
-        double multiplier = expectedTotal / ingredientPercentTotal;*/
 
         double flourOneWeight = ingredientWeights.get(0);
         double flourTwoWeight = ingredientWeights.get(1);
